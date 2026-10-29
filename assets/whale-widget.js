@@ -6705,7 +6705,7 @@ function usageTodayKeyStr() {
 function usageRemindDefaultLines(isAlert) {
   if (isAlert) {
     return [
-      { type: 'text', text: '老大~你的DS余额', size: 5, bold: true },
+      { type: 'text', text: '老大~你的北辰余额', size: 5, bold: true },
       { type: 'text', text: '已经不足', size: 5, bold: true, row: 2 },
       { type: 'text', text: '${below}', size: 5, bold: true, rgb: 'rouge', color: '', bgRgb: '', bg: '', row: 2 },
       { type: 'text', text: '啦~', size: 5, bold: true, row: 2 },
