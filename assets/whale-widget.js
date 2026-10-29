@@ -17841,6 +17841,7 @@ function bubbleContentTokenMap(m) {
   } else {
     v = bubblePeakText(m)
     map['status'] = v
+    map['countdown'] = '用量范围：当前 API key'
   }
   return map
 }
