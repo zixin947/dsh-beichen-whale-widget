@@ -1280,7 +1280,7 @@ var styleEl = document.createElement('style')
 // 「当前正在物化的那个插件」名下，之后该插件热重载/失效时 removeOwnedStyles 会把它
 // 一起删掉。样式一没，挂件 20 多个 dshwv-* 节点就从 position:fixed 掉回文档流堆在
 // 页面底部（页面被撑到几千像素高）。打上自己的名字后就不会被任何人认领/删除。
-styleEl.setAttribute('data-plugin', 'dsh-whale-widget')
+styleEl.setAttribute('data-plugin', 'dsh-beichen-whale-widget')
 styleEl.textContent = css
 document.head.appendChild(styleEl)
 
@@ -1341,11 +1341,11 @@ img.className = 'dshwv-img'
 // loadRoles() 异步完成后会再校验：角色仍在则保持，被删则回退默认。
 var initRoleUrl = IMG_URL
 try {
-  var initRoleId = localStorage.getItem('dshw-role') || ''
+  var initRoleId = localStorage.getItem('bcw-role') || ''
   if (initRoleId && initRoleId !== 'default') initRoleUrl = '/dsh-whale/role-image.png?id=' + encodeURIComponent(initRoleId)
 } catch (err) {}
 img.src = initRoleUrl
-img.alt = 'DeepSeek 余额'
+img.alt = '北辰余额 / 额度'
 img.draggable = false
 
 var menuBtn = document.createElement('button')
@@ -1852,7 +1852,7 @@ function soundClaimOnce(key, ttlMs) {
     var now = Date.now()
     var ttl = isFinite(Number(ttlMs)) && Number(ttlMs) > 0 ? Number(ttlMs) : 180
     var raw = ''
-    try { raw = localStorage.getItem('dshw-snd-once') || '' } catch (err) { raw = '' }
+    try { raw = localStorage.getItem('bcw-snd-once') || '' } catch (err) { raw = '' }
     if (raw) {
       var i = raw.lastIndexOf('|')
       if (i > 0) {
@@ -1861,7 +1861,7 @@ function soundClaimOnce(key, ttlMs) {
         if (prevKey === k && now - prevAt < ttl) return false // 刚有人播过同一个音 ⇒ 这一次不播
       }
     }
-    try { localStorage.setItem('dshw-snd-once', k + '|' + now) } catch (err) {}
+    try { localStorage.setItem('bcw-snd-once', k + '|' + now) } catch (err) {}
   } catch (err) {}
   return true
 }
@@ -2016,7 +2016,7 @@ var turnCostToggle = document.createElement('input')
 turnCostToggle.type = 'checkbox'
 turnCostToggle.className = 'dshwv-check'
 turnCostToggle.checked = true
-turnCostToggle.title = '每轮对话结束后自动显示本轮消耗金额'
+turnCostToggle.title = '每轮对话结束后自动显示最近同步消费金额'
 turnCostToggle.addEventListener('change', function () { setTurnCostOn(turnCostToggle.checked) })
 var turnCostCloseInput = document.createElement('input')
 turnCostCloseInput.type = 'number'
@@ -2024,7 +2024,7 @@ turnCostCloseInput.min = '0'
 turnCostCloseInput.step = '1'
 turnCostCloseInput.className = 'dshwv-number'
 turnCostCloseInput.value = '5'
-turnCostCloseInput.disabled = false // 跟随「每轮消耗提示」开关
+turnCostCloseInput.disabled = false // 跟随「消费同步提示」开关
 turnCostCloseInput.title = '填 0 表示不自动关闭，需手动点击关闭'
 turnCostCloseInput.addEventListener('input', function () { setTurnCostClose(turnCostCloseInput.value) })
 turnCostCloseInput.addEventListener('change', function () { setTurnCostClose(turnCostCloseInput.value) })
@@ -2069,7 +2069,7 @@ soundToggle.checked = true
 soundToggle.title = '音效总开关：关掉后不出声（含音效组试听），并立刻挂起音频上下文、把系统睡眠交还给你'
 soundToggle.addEventListener('change', function () { setSoundOn(soundToggle.checked) })
 // v762：「音效与提示」行 = 标签 + 面板入口（总开关搬进面板 ① 表头，本行不再放开关）。
-// 原「音效」行里的音效组/导入、原「音量」行的滑块，以及每轮消耗/提问/授权的音效，全部收进面板。
+// 原「音效」行里的音效组/导入、原「音量」行的滑块，以及消费同步/提问/授权的音效，全部收进面板。
 // ⚠️ soundToggle 这个元素**仍然创建**（setSoundOn() 与配置回填都会 `soundToggle.checked = ...`），
 //    只是不再挂到本行上。删掉它的创建会让那两处抛 ReferenceError（本项目栽过整个挂件不出现）。
 var row2 = menuRow()
@@ -2079,7 +2079,7 @@ soundPanelBtn.type = 'button'
 soundPanelBtn.className = 'dshwv-roleimport'
 soundPanelBtn.style.flex = '1'
 soundPanelBtn.textContent = '音效/提示泡泡设置'
-soundPanelBtn.title = '提示与音效设置：按压音量/音效组、每轮消耗提示、提问提示、授权提示'
+soundPanelBtn.title = '提示与音效设置：按压音量/音效组、消费同步提示、提问提示、授权提示'
 soundPanelBtn.addEventListener('click', function (e) { e.stopPropagation(); openSoundSettingsPanel() })
 row2.appendChild(soundPanelBtn)
 var row6 = menuRow()
@@ -2098,14 +2098,14 @@ var menuSep1 = document.createElement('div')
 menuSep1.className = 'dshwv-menu-sep'
 // v720:「自动关闭 n 秒」与「任务结束音效」都收进「自定义提示」窗口,这一行只留开关 + 入口按钮
 var row7 = menuRow()
-row7.appendChild(menuLabel('每轮消耗提示'))
+row7.appendChild(menuLabel('消费同步提示'))
 row7.appendChild(turnCostToggle)
 var turnCostCustomBtn = document.createElement('button')
 turnCostCustomBtn.type = 'button'
 turnCostCustomBtn.className = 'dshwv-roleimport'
 turnCostCustomBtn.style.flex = '1' // 占满本行剩余空位(与「自定义泡泡」按钮一致)
 turnCostCustomBtn.textContent = '自定义提示'
-turnCostCustomBtn.title = '自定义每轮消耗提示内容(金额用 {cost})、自动关闭秒数、任务结束音效'
+turnCostCustomBtn.title = '自定义消费同步提示内容(金额用 {cost})、自动关闭秒数、任务结束音效'
 turnCostCustomBtn.addEventListener('click', function (e) { e.stopPropagation(); usageAlertBudgetEditor('cost', null) })
 row7.appendChild(turnCostCustomBtn)
 var row9 = menuRow()
@@ -2145,7 +2145,7 @@ menuBox.appendChild(rowRole)
 menuBox.appendChild(row1)
 menuBox.appendChild(row2)
 menuBox.appendChild(row6)
-// v762：「每轮消耗提示」整行**不再挂到主菜单**（菜单里已再无此行，配置入口移进「全局设置」面板）。
+// v762：「消费同步提示」整行**不再挂到主菜单**（菜单里已再无此行，配置入口移进「全局设置」面板）。
 // ⚠️ row7 及其内部控件（turnCostToggle / turnCostCustomBtn）的创建**必须原样保留**：
 //    turnCostToggle 仍被 OPEN 时的状态同步与 setTurnCostOn() 引用，**取消挂载 ≠ 删除创建**。
 //    （本文件曾在「删了一行、别处还引用 rowN」上踩过：init 抛 TypeError 被外层 try 静默吞掉，
@@ -2881,7 +2881,7 @@ function aboutRender() {
     function () { aboutSelfCheck() })
   // v805（用户要求）：这一行**不显示来源**（来源只出现在"复制诊断信息"的文本里）
   actRow('检查更新', aboutLastUpdate || '检查中…',
-    '点击重新检查 npm 上的最新版本（五个源并行：npmmirror / jsdelivr / unpkg / npmjs / npm-cli）',
+    'GitHub 源码版，请从本仓库拉取更新',
     '', function () { aboutCheckUpdate() })
   secEnd()
   // 动作区：2 列网格；「复制以上全部信息」放在**最后一行**（用户要求；v814 按要求改名）
@@ -2892,8 +2892,8 @@ function aboutRender() {
     bb.addEventListener('click', function (e) { e.stopPropagation(); fn() })
     acts.appendChild(bb)
   }
-  btn('仓库', function () { aboutOpenLink('https://github.com/MeteorNOX/DeepSeek-Balance-Whale-Widget') })
-  btn('更新日志', function () { aboutOpenLink('https://github.com/MeteorNOX/DeepSeek-Balance-Whale-Widget/releases') })
+  btn('仓库', function () { aboutOpenLink('https://github.com/zixin947/dsh-beichen-whale-widget') })
+  btn('更新日志', function () { aboutOpenLink('https://github.com/zixin947/dsh-beichen-whale-widget/releases') })
   btn('复制以上全部信息', function () { aboutCopyText(aboutDiagText(aboutData)) }, true)
   el.appendChild(acts)
   el.appendChild(aboutEl('div', 'dshwv-about-note', '点任意一行复制该行；每节标题右侧可整节复制。自检只访问本机两条插件路由（不联网、不耗 token）。前端改动需 Ctrl+F5，宿主改动需重启服务。'))
@@ -3139,7 +3139,7 @@ try {
     toggleAboutSub()
   })
 } catch (err) {}
-function usageMoney(x, currency) { return apiFmtMoney(x, currency || 'CNY') }
+function usageMoney(x, currency) { return apiFmtMoney(x, currency || 'USD') }
 function usageDayLabel(day) {
   try {
     var d = day.split('-')
@@ -3171,7 +3171,7 @@ function buildUsageSubShell() {
 }
 // —— 预警/预算提醒内容编辑:直接复用 W2 模块编辑组件(可选模块入框/拖入、行内并排、拖动排序、按类型编辑、真实预览) ——
 // ===== v761（全局音效设置面板）：一个窗口里调四个事件 =====
-// 按压音效 / 每轮消耗提示 / 提问音效 / 授权音效，各自的音效 + 独立音量 + 自动关闭 + 冒泡。
+// 按压音效 / 消费同步提示 / 提问音效 / 授权音效，各自的音效 + 独立音量 + 自动关闭 + 冒泡。
 // 默认值必须与宿主 whale-balance.mjs 的 soundEventsDefaults() **逐字段一致**
 // （宿主 = 新用户默认；这里 = 面板的读回兜底与「恢复默认」的目标，改一处必须同步另一处）。
 function soundEventDefaults() {
@@ -3204,7 +3204,7 @@ function soundEventCfg(kind) {
   var out = {}
   for (var k in def) {
     var v = src[k]
-    // v859（用户要求）：每轮消耗/提问/授权的音量可以调到 200%（0–2）
+    // v859（用户要求）：消费同步/提问/授权的音量可以调到 200%（0–2）
     if (k === 'vol') { var n = Number(v); out.vol = (isFinite(n) && n >= 0 && n <= 2) ? n : def.vol }
     else if (k === 'ttlSec') { var s = Number(v); out.ttlSec = (isFinite(s) && s >= 0) ? Math.round(s) : def.ttlSec }
     else if (k === 'sel') out.sel = (typeof v === 'string') ? v : def.sel
@@ -3238,10 +3238,10 @@ function soundEventOut(cfg, withBind) {
 // 提示与音效设置面板（主菜单「音效与提示」行 →「全局设置」按钮；v761 引入时叫「全局音效设置」）。
 // 保存语义与既有窗口一致：窗口期间的改动**只落内存缓冲**（sndBuf），点「保存」才一次 PUT
 // （events + taskEnd）；「取消」或点遮罩关闭 = 丢弃缓冲，并把**复用自主菜单的控件**
-// （音量滑块 volInput、按压总开关、每轮消耗开关 —— 它们的监听本来就是即时提交的）还原回打开时的快照。
+// （音量滑块 volInput、按压总开关、消费同步开关 —— 它们的监听本来就是即时提交的）还原回打开时的快照。
 // v763（真机反馈修）：**「恢复默认」也必须守这条语义** —— 它只改内存缓冲与控件显示，一个字节都不落盘
 // （既不调 setVol/setSoundOn/setTurnCostOn，也不 saveUsageSettings）；那几项（按压音量/音效总开关/
-// 每轮消耗开关/自动关闭秒数，存在 .dsh-size.json）的真落盘统一由 saveAll() 负责，点「取消」则由
+// 消费同步开关/自动关闭秒数，存在 .dsh-size.json）的真落盘统一由 saveAll() 负责，点「取消」则由
 // cleanup(true) 回滚（自动关闭走 setTurnCostClose，收秒、落 .dsh-size.json 的 turnCostCloseMs）。
 function openSoundSettingsPanel() {
   try {
@@ -3449,7 +3449,7 @@ function openSoundSettingsPanel() {
       return b
     }
     // 独立音量滑块 + 百分比（只改缓冲，点「保存」才落盘）
-    // v859：加 opts.max（默认 1 = 100%）；每轮消耗/提问/授权三行传 2 = 最高 200%
+    // v859：加 opts.max（默认 1 = 100%）；消费同步/提问/授权三行传 2 = 最高 200%
     function volSlider(getV, setV, opts) {
       var vMax = (opts && isFinite(Number(opts.max)) && Number(opts.max) > 0) ? Number(opts.max) : 1
       var inp = document.createElement('input')
@@ -3581,13 +3581,13 @@ function openSoundSettingsPanel() {
       { el: audioImportBtn, label: null },
       { el: volInput, label: rPressVol.firstChild },
     ])
-    // —— ② 每轮消耗提示 ——
+    // —— ② 消费同步提示 ——
     // v762 行序（与 ③④ 统一）：冒泡提示 → 自动关闭 → 音效行 → 提示音量
     // （DOM 顺序 = 创建顺序，所以这里按目标顺序调用即完成重排）
     // v763：② 表头的 [✓] 留个句柄，供 applyDefaults() 同步显示（直接改 .checked 不会触发 change ⇒ 不落盘）
-    var tcEnt = sndEntry('每轮消耗提示', !!turnCostOn, function (b) { setTurnCostOn(b) })
+    var tcEnt = sndEntry('消费同步提示', !!turnCostOn, function (b) { setTurnCostOn(b) })
     var tcOnChk = tcEnt.chk
-    var tcBub = bubbleRow(sndBuf.turnCost, function () { usageAlertBudgetEditor('cost', null) }, '编辑每轮消耗提示的泡泡内容（金额用 {cost}）', tcEnt.body)
+    var tcBub = bubbleRow(sndBuf.turnCost, function () { usageAlertBudgetEditor('cost', null) }, '编辑消费同步提示的泡泡内容（金额用 {cost}）', tcEnt.body)
     var tcAc = autoCloseRow(tcCloseBuf, tcEnt.body)
     var rTe = row('任务结束音', tcEnt.body)
     // 音效行的 [✓] = 该事件是否播这个音效。② 直接绑**既有的** usageSet.taskEnd.on
@@ -3614,7 +3614,7 @@ function openSoundSettingsPanel() {
     if (teSel.value) bufTaskEndSel = teSel.value
     // v778：②区「提示音量」—— 拖动即视为**用户显式设置**（volSet = true），此后该事件用自己的值；
     //   没拖过则保持"跟随①区按压音量"（见 soundVolumeOf），摘要里会写明，避免再出现"滑块看着能调、其实无效"。
-    // v859：每轮消耗提示的音量上限 200%
+    // v859：消费同步提示的音量上限 200%
     var tcVol = volSlider(function () { return sndBuf.turnCost.vol }, function (v) {
       sndBuf.turnCost.vol = v
       sndBuf.turnCost.volSet = true
@@ -3667,7 +3667,7 @@ function openSoundSettingsPanel() {
       // v764：**不再挂「自动关闭」那一行** —— 提问/授权的提示气泡是**常驻**的（宿主给的是挂起状态，
       // 前端 whaleSysPush({kind:'wait', ttlMs: 0}) 不布自动关闭计时器），所以那行改了也没有任何消费方，
       // 属于「看起来能设、其实什么都不做」的死控件。行序因此是：冒泡提示 → 音效行 → 提示音量。
-      // v862b（用户要求）：子智能体完成是否提示 —— 与「每轮消耗提示」同一区（它管的就是"任务结束"的提示）
+      // v862b（用户要求）：子智能体完成是否提示 —— 与「消费同步提示」同一区（它管的就是"任务结束"的提示）
       var rSel = row(selLabel, wEnt.body)
       // 音效行的 [✓] = 是否播这个音效，键 = events.<kind>.soundOn（v762 新增，默认 true）。
       // 提问/授权本来就被表头总开关默认关着（on: false），所以默认 true 不带来任何行为变化。
@@ -3845,7 +3845,7 @@ function openSoundSettingsPanel() {
     // v872：登记同步钩子（模块级写入口会直接调它）+ 监听挂到 document（capture）
     //   —— 面板内所有控件（含手风琴入口行里的 [✓]）改动都会走到这里
     try { sndSyncHook = syncSoundChannelRows } catch (err) {}
-    // ⚠️ v875（用户报"每轮消耗提示里关掉任务结束音，顶行与消耗提示行没跟着关；再打开才反着变一次"）：
+    // ⚠️ v875（用户报"消费同步提示里关掉任务结束音，顶行与消耗提示行没跟着关；再打开才反着变一次"）：
     //   根因是监听的**阶段**错了 —— 挂在 document 的**捕获**阶段 ⇒ document 的处理器先跑、
     //   目标元素自己的 change（它才写 bufTaskEndOn）后跑 ⇒ 同步读到**旧值**，UI 永远慢一拍。
     //   改成**冒泡阶段**：目标元素先写状态，冒泡到 document 时再同步 ⇒ 读到的就是新值。
@@ -3958,7 +3958,7 @@ function openSoundSettingsPanel() {
           wait: { charClose: !!bufWaitCharClose },
           subagent: { mute: bufSubagentMute !== false }, // v862b
         })
-        // v763：按压音量 / 音效总开关 / 每轮消耗提示开关这三项**不在**上面这次 PUT 的覆盖范围里
+        // v763：按压音量 / 音效总开关 / 消费同步提示开关这三项**不在**上面这次 PUT 的覆盖范围里
         //（它们存在 .dsh-size.json，走 saveConfig()）⇒ 保存时必须各自按**当前内存值**提交一次，
         // 否则「恢复默认」对它们不生效（用户会觉得恢复默认对音量/开关没作用）。
         // 三个 setter 各自都有「值没变就写一遍同样的值」的幂等行为，无副作用。
@@ -3995,7 +3995,7 @@ function openSoundSettingsPanel() {
         // 由「关」到「开」时补上 setSoundOn(true) 的**非落盘**副作用（复位本轮播放状态 + 重新预热）：
         // 否则音频上下文还停在 suspend，面板里的试听按钮会没声音（取消时 setSoundOn(快照) 会回去）。
         if (sndWasOff) { try { applySoundSet() } catch (err) {} }
-        // ② 「每轮消耗提示」总开关（同样只改内存）
+        // ② 「消费同步提示」总开关（同样只改内存）
         turnCostOn = true
         try { tcOnChk.checked = true } catch (err) {}
         try { turnCostToggle.checked = true } catch (err) {}
@@ -4006,7 +4006,7 @@ function openSoundSettingsPanel() {
         // v764：② 「自动关闭」的默认值 = 出厂值（5 秒 / 开，与 .dshw-size.json 的 turnCostCloseMs 出厂
         // 默认一致）—— 它现在住在 tcCloseBuf 里，**不再**跟着 DEF.turnCost 走。同样只改内存
         // （**不调 setTurnCostClose** ⇒ 不落盘），并把（已创建、未挂载的）秒数输入框显示同步好 ——
-        // 否则之后从本面板打开「自定义提示（每轮消耗）」窗口时，那个窗口的「保存」会按陈旧的输入框值
+        // 否则之后从本面板打开「自定义提示（消费同步）」窗口时，那个窗口的「保存」会按陈旧的输入框值
         // 把 turnCostCloseMs 又写回去。
         tcCloseBuf.autoClose = true
         tcCloseBuf.ttlSec = TC_CLOSE_DEFAULT_SEC
@@ -4140,7 +4140,7 @@ function openSoundSettingsPanel() {
 function usageAlertBudgetEditor(key, onSave) {
   try {
     var isAlert = key === 'alert'
-    // v720:第三个模式 cost —— 主菜单「每轮消耗提示」后的「自定义提示」窗口。
+    // v720:第三个模式 cost —— 主菜单「消费同步提示」后的「自定义提示」窗口。
     // 内容与预警/预算共用同一套模块机制;头部不是"触发条件"而是自动关闭秒数 + 任务结束音效(从主菜单搬来)。
     var isCost = key === 'cost'
     // v761（#161 C5）：第四/第五个模式 question / approval —— 「全局音效设置」面板里
@@ -4192,7 +4192,7 @@ function usageAlertBudgetEditor(key, onSave) {
     var title = document.createElement('div')
     title.className = 'dshwv-bubtitle'
     title.textContent = isCost
-      ? '自定义提示（每轮消耗 · 内容）'
+      ? '自定义提示（消费同步 · 内容）'
       : (isWait
         ? ('编辑 ' + (waitKind === 'approval' ? '授权' : '提问') + '提示内容(可拖动下方模块入框)')
         : ('编辑 ' + (isAlert ? '余额预警' : '今日预算') + '提醒内容(可拖动下方模块入框)'))
@@ -4201,7 +4201,7 @@ function usageAlertBudgetEditor(key, onSave) {
     var secCond = document.createElement('div')
     secCond.className = 'dshwv-bubsec dshwv-bubsec-first'
     secCond.textContent = isCost
-      ? '每轮消耗提示(内容里用 {cost} 引用本轮消耗金额)'
+      ? '消费同步提示(内容里用 {cost} 引用最近同步消费金额)'
       : (isWait
         ? ((waitKind === 'approval' ? '授权' : '提问') + '提示内容({session} = 对话名)')
         : (isAlert ? '触发条件(余额低于该值时提醒)' : '触发条件(今日已用达到该值时提醒)'))
@@ -4244,7 +4244,7 @@ function usageAlertBudgetEditor(key, onSave) {
       // v763（用户要求）：本窗口**不再挂这三行** —— 「自动关闭 [秒数] 秒(0=不自动关闭)」、
       // 「任务结束音效 [音效名 ▾]」（含左边的 [✓]）以及下面的小字提示
       // 「每轮回复完成时播放;这两项点「保存」后才生效」。它们现在都在「提示与音效设置」面板的
-      // 「每轮消耗提示」区里（那一区才是这两项的正式入口），留在本窗口属于重复。
+      // 「消费同步提示」区里（那一区才是这两项的正式入口），留在本窗口属于重复。
       // ⚠️ 这里**只是不 append**，元素的创建与相关缓冲/快照/取消还原一律原样保留：
       //   · turnCostCloseInput：仍创建（见文件上方），仍走 turnCostCloseDefer / -Snap 那套
       //     「窗口内只改内存 → 点「保存」才 setTurnCostClose 落 .dsh-size.json → 取消按快照还原」；
@@ -4342,7 +4342,7 @@ function usageAlertBudgetEditor(key, onSave) {
       '<div>· 拖到某行上/下 = 拆行另起一行</div>' +
       '<div>· 拖 ⠿ 手柄 = 整行排序</div>' +
       (isCost
-        ? '<div style="margin-top:4px">{cost} 在触发时替换为本轮消耗金额(默认内容请保持 {cost})</div>'
+        ? '<div style="margin-top:4px">{cost} 在触发时替换为最近同步消费金额(默认内容请保持 {cost})</div>'
         : (isWait
           ? '<div style="margin-top:4px">{session} 在挂起时替换为当前对话名（读不到显示「当前对话」，超长按 12 字符截断并追加 ...）</div>'
           : '<div style="margin-top:4px">{below} / {amount} 在触发时替换为实际数值</div>')) +
@@ -4357,7 +4357,7 @@ function usageAlertBudgetEditor(key, onSave) {
     var secPv = document.createElement('div')
     secPv.className = 'dshwv-bubsec'
     secPv.textContent = isCost
-      ? '提示内容(每轮消耗)'
+      ? '提示内容(消费同步)'
       : (isWait ? ('提示内容(' + (waitKind === 'approval' ? '授权' : '提问') + ')') : '提醒内容')
     card.appendChild(secPv)
     bubblePvEl = document.createElement('div')
@@ -4434,7 +4434,7 @@ function usageAlertBudgetEditor(key, onSave) {
         renderBubblePv = bkRenderPv
         qeditEnsure = bkQeditEnsure
         if (moduleMask) moduleMask.style.zIndex = bkModMaskZ
-        var zsEl = document.getElementById('dshw-remind-overlay-z')
+        var zsEl = document.getElementById('bcw-remind-overlay-z')
         if (zsEl) { try { document.head.removeChild(zsEl) } catch (err) {} }
         window.__dshwRemindMask = null
       } catch (err) {}
@@ -4522,10 +4522,10 @@ function usageAlertBudgetEditor(key, onSave) {
     try { if (moduleMask) moduleMask.style.zIndex = '31000' } catch (err) {}
     // 提醒编辑期间:窗口内可能弹出的各类全屏遮罩(确认/裁剪/音频/快照/用量)统一置顶,杜绝层级错位
     var remindZStyle = document.createElement('style')
-    remindZStyle.id = 'dshw-remind-overlay-z'
+    remindZStyle.id = 'bcw-remind-overlay-z'
     // 同上（PR #114）：本文本表同样必须自带 data-plugin，否则会被别的客户端插件
     // 热重载时顺带删掉，提醒编辑期的遮罩层级就失效了。
-    remindZStyle.setAttribute('data-plugin', 'dsh-whale-widget')
+    remindZStyle.setAttribute('data-plugin', 'dsh-beichen-whale-widget')
     // 提醒编辑期间:窗口内可能弹出的全屏遮罩(确认/裁剪/音频/快照)统一置顶,杜绝层级错位。
     // 注意:不要把 .dshwv-usage-mask 放进来——「模型子菜单/模型设置」用的是这个类(29000),
     // 一提权就会反盖到提醒编辑器(30000)上面。
@@ -4540,7 +4540,7 @@ function usageAlertBudgetEditor(key, onSave) {
     }
     try { if (qeditEl) qeditEl.style.zIndex = '31000' } catch (err) {}
     // 包装 renderBubblePv:列表/预览后,鲸鱼预览里的占位符用实际值实时替换
-    // ({below} 余额阈值 / {amount} 预算阈值 / {cost} 本轮消耗金额 / {session} 当前对话名)
+    // ({below} 余额阈值 / {amount} 预算阈值 / {cost} 最近同步消费金额 / {session} 当前对话名)
     var renderPvSuper = bkRenderPv
     // ===== v858（用户反馈：余额预警的实时预览不刷新，拖模块也不变）=====
     // 原来这里**只**依赖"renderBubblePv 被调用"这一条链，任何一处异常/漏调都表现为预览冻住。
@@ -4651,12 +4651,12 @@ function apiModelById(id) {
   for (var i = 0; i < apiModels.length; i++) if (apiModels[i] && apiModels[i].id === id) return apiModels[i]
   return null
 }
-// 「充值 / 余额校正」只属于固定的 DeepSeek（内置）：宿主在模型条目里下发 canAdjustBalance，
+// 「充值 / 余额校正」只属于固定的 北辰 API（内置）：宿主在模型条目里下发 canAdjustBalance，
 // 前端据此决定要不要在设置菜单里给出入口 —— 手动新增的同名模型、Kimi 等其它厂商都不会有，
 // 新增模板也不会自动继承（宿主还会在路由层再校验一次，见 balance-adjustments.json）。
 function apiCanAdjustBalance(model) {
-  return !!(model && model.id === 'deepseek' && model.builtin === true &&
-    model.provider === 'deepseek' && model.canAdjustBalance === true)
+  return !!(model && model.id === 'beichen' && model.builtin === true &&
+    model.provider === 'beichen' && model.canAdjustBalance === true)
 }
 // 今日已用金额自带的币种（host 下发的 todayUsageCurrency）：
 // 会话事件金额在 host 已按自定义单价折算成人民币，余额差则是厂商币种 → 显示必须按各自的币种，
@@ -4678,6 +4678,7 @@ function apiConvertMoney(v, fromCur, toCur, rate) {
   return null
 }
 function apiFmtMoney(v, cur) {
+  if (v === null || v === undefined || v === '') return '--'
   var n = Number(v)
   if (!isFinite(n)) return '--'
   var c = String(cur || '')
@@ -4796,7 +4797,7 @@ function openModelAlertBudget(modelId, key, after) {
       else next.amount = o.amount
       st[key] = next
       // 内置 DeepSeek 同步顶层，兼容旧逻辑
-      if (modelId === 'deepseek') usageSet[key] = next
+      if (modelId === 'beichen') usageSet[key] = next
       var patch = { action: 'model-settings', id: modelId }
       patch[key] = next
       postApiModels(patch, function () { if (after) after() })
@@ -4925,6 +4926,7 @@ function openApiModelPanel(modelId) {
     })
     var tplOpts = []
     for (var tl = 0; tl < tplList.length; tl++) tplOpts.push([tplList[tl].id, tplList[tl].label])
+    if (m && m.builtin) tplOpts = [[m.provider, m.name]]
     var tplSel = apiSelectEl(tplOpts, isNew ? 'openrouter' : m.provider)
     if (!isNew) tplSel.disabled = true
     card.appendChild(apiPanelRow('厂商模板', tplSel))
@@ -4938,6 +4940,11 @@ function openApiModelPanel(modelId) {
     // 密钥
     card.appendChild(apiSec('密钥'))
     var keyRefInp = apiTextInput(isNew ? '' : m.keyRef, '凭据名，例如 OPENROUTER_API_KEY')
+    if (m && m.builtin) {
+      nameInp.disabled = true
+      curSel.disabled = true
+      keyRefInp.readOnly = true
+    }
     keyRefInp.title = '写入 DSH 官方凭据（.credentials.yaml）时使用的名字'
     card.appendChild(apiPanelRow('凭据名', keyRefInp))
     var keyInp = document.createElement('input')
@@ -5167,7 +5174,7 @@ function openApiModelPanel(modelId) {
         refreshModelList()
       })
     }))
-    if (!isNew) {
+    if (!isNew && !m.builtin) {
       btns.appendChild(apiBtn('删除模型', 'dshwv-bubbtn dshwv-bubbtn-no', function () {
         showConfirm('删除模型「' + (m.name || m.id) + '」？\n该模型的提醒/预算与所有泡泡里引用它的模块会一并移除。', function () {
           postApiModels({ action: 'delete', id: m.id }, function (d) {
@@ -5791,10 +5798,10 @@ function openApiModelMenu(modelId) {
       pCur = String(pc.cur || 'CNY').toUpperCase()
       pTxt = fmtP(pc.hit) + ' / ' + fmtP(pc.miss) + ' / ' + fmtP(pc.out) + ' · ' + pCur
       if (pCur === 'USD') pTxt += '（汇率 ' + (Number(pc.rate) > 0 ? pc.rate : '未填') + '）'
-      if (m.builtin) pTxt += ' ← 内置模型不生效（始终用内置峰谷价）'
+      if (m.builtin) pTxt += ' ← 内置模型使用北辰服务端 actual_cost'
     } else if (m.builtin) {
       // 内置 DeepSeek 的自定义单价在 host 被显式跳过（priceFor 不读内置模型），所以这里说清"不能改"
-      pTxt = '内置峰谷价（内置模型不支持自定义单价）'
+      pTxt = '北辰服务端实际费用（USD），当前 API key 口径'
     } else {
       // 这一行是只读展示；真正填写的地方在「密钥 / 接口」面板
       pTxt = '未设置（沿用内置价目表）→ 在「密钥 / 接口」里填写'
@@ -5806,7 +5813,7 @@ function openApiModelMenu(modelId) {
       var accAmt = (acc && typeof acc.amount === 'number') ? acc.amount : m.todayUsage
       var accInfo = (acc && acc.firstObservedAt)
         ? '统计起点（北京）：' + accountingTime(acc.firstObservedAt) + '。起点前的消费未计入；该账户的观测包含同一个 key 在别处的消费。'
-        : '尚无余额观测：先配置 DeepSeek API key 并成功刷新一次余额。'
+        : '尚无余额观测：先配置 北辰 API key 并成功刷新一次余额。'
       readonlyRow('已观测消费', ((acc && acc.label) || m.usageLabel || '已观测消费') + ' ' +
         (isFinite(Number(accAmt)) ? apiFmtMoney(accAmt, apiTodayCur(m)) : '--'), accInfo)
       // 需要用户动手的提示仍然直接显示（不藏进「?」里）
@@ -5818,8 +5825,8 @@ function openApiModelMenu(modelId) {
         card.appendChild(accWarn)
       }
     }
-    // 「充值 / 余额校正」入口：只给固定的 DeepSeek（内置），放在「单价」下方、沿用同一行布局与按钮样式。
-    // 其它厂商、手动新增的 DeepSeek、仅改名为「DeepSeek（内置）」的模型都不会走到这里。
+    // 「充值 / 余额校正」入口：只给固定的 北辰 API（内置），放在「单价」下方、沿用同一行布局与按钮样式。
+    // 其它厂商、手动新增的 DeepSeek、仅改名为「北辰 API（内置）」的模型都不会走到这里。
     if (apiCanAdjustBalance(m)) {
       var adjustmentRow = rowOf('余额校正', function () {
         return (m.accounting && m.accounting.label) || '充值与余额调整'
@@ -5922,7 +5929,7 @@ function accountingTime(at) {
 }
 var accountingMask = null
 function openBalanceAdjustment(modelId) {
-  // 只有固定的 DeepSeek（内置）能打开：入口由宿主下发的 canAdjustBalance 控制，这里再挡一次
+  // 只有固定的 北辰 API（内置）能打开：入口由宿主下发的 canAdjustBalance 控制，这里再挡一次
   if (!apiCanAdjustBalance(apiModelById(modelId)) || accountingMask) return
   var adjustmentUrl = '/dsh-whale/balance-adjustments.json?modelId=' + encodeURIComponent(modelId)
   closeApiModelPanel()
@@ -5939,18 +5946,18 @@ function openBalanceAdjustment(modelId) {
   card.style.textAlign = 'left'
   card.setAttribute('role', 'dialog')
   card.setAttribute('aria-modal', 'true')
-  card.setAttribute('aria-label', 'DeepSeek（内置）余额校正')
+  card.setAttribute('aria-label', '北辰 API（内置）余额校正')
   // 内容可能比 82vh 高：中间这段自己滚，按钮行固定在底部（与 .dshwv-reswrap 同一做法）
   var body = document.createElement('div')
   body.style.cssText = 'min-height:0;overflow-y:auto;flex:1 1 auto'
   var title = document.createElement('div')
   title.className = 'dshwv-bubtitle'
-  title.textContent = '余额校正 · DeepSeek（内置）'
+  title.textContent = '余额校正 · 北辰 API（内置）'
   body.appendChild(title)
   var introduction = document.createElement('div')
   introduction.className = 'dshwv-bubhint'
   introduction.style.cssText = 'margin:0 0 8px;white-space:normal;line-height:1.6;text-align:left'
-  introduction.textContent = '核对统计区间内的全部到账后，重新计算本地消费。此操作不会充值，也不会改变 DeepSeek 账户余额。'
+  introduction.textContent = '核对统计区间内的全部到账后，重新计算本地消费。此操作不会充值，也不会改变 北辰账户余额。'
   body.appendChild(introduction)
   var dates = apiSelectEl([], '')
   body.appendChild(apiPanelRow('日期', dates))
@@ -6043,7 +6050,7 @@ function openBalanceAdjustment(modelId) {
     save.disabled = !selected || busy
     reset.disabled = !selected || !selected.correctedAt || busy
     if (!selected) {
-      interval.textContent = '尚无可校正的余额观测。请先配置 DeepSeek API key 并成功刷新余额。'
+      interval.textContent = '尚无可校正的余额观测。请先配置 北辰 API key 并成功刷新余额。'
       creditsHint.textContent = ''
       debitsHint.textContent = ''
       return
@@ -6154,12 +6161,12 @@ function fillUsagePanel(d) {
   var todayModels = today.models || []
   var hasEvToday = todayModels.length > 0
   // ① 本机模型费用（所有模型的本地会话估算）
-  // 「已观测消费」是 DeepSeek 账户口径（余额观测），已移到 小鲸鱼记账 → DeepSeek（内置）→ 设置 里，
+  // 「已观测消费」是 DeepSeek 账户口径（余额观测），已移到 小鲸鱼记账 → 北辰 API（内置）→ 设置 里，
   // 与「余额校正」放在一起，避免在这里被误读成"全模型合计"。
-  var modelTitle = uSectionTitle('本机模型费用', usageMoney(today.modelTotal, 'CNY'))
+  var modelTitle = uSectionTitle('北辰模型实际费用', usageMoney(today.modelTotal, 'USD'))
   // 标题与下方模型列表之间不再画分隔线（列表本身有边框，够了）
   modelTitle.style.borderBottom = 'none'
-  modelTitle.title = '按本机 DSH 会话计算，不按账户余额比例缩放；两者覆盖范围不同。'
+  modelTitle.title = '来自北辰 /v1/usage 的 actual_cost，只统计当前 API key；钱包余额可能包含其它 key。'
   wrap.appendChild(modelTitle)
   var todayBox = document.createElement('div')
   todayBox.className = 'dshwv-usage-scroll dshwv-usage-today'
@@ -6178,12 +6185,12 @@ function fillUsagePanel(d) {
   } else if ((today.total || 0) > 0) {
     var noM = document.createElement('div')
     noM.className = 'dshwv-usage-hint'
-    noM.textContent = '暂无本机会话费用明细；账户余额观测仍独立记账。'
+    noM.textContent = '北辰暂未返回模型明细；上方费用按服务端 actual_cost 显示。'
     todayBox.appendChild(noM)
   } else {
     var empty = document.createElement('div')
     empty.className = 'dshwv-usage-hint'
-    empty.textContent = '今日暂无消费记录'
+    empty.textContent = today.total === null ? '北辰用量暂不可用，请检查接口状态' : '今日暂无消费记录'
     todayBox.appendChild(empty)
   }
   // 列表高度不限制（随内容增长），下方「更多消费记录…」位置随内容移动
@@ -6700,28 +6707,28 @@ function usageRemindDefaultLines(isAlert) {
     return [
       { type: 'text', text: '老大~你的DS余额', size: 5, bold: true },
       { type: 'text', text: '已经不足', size: 5, bold: true, row: 2 },
-      { type: 'text', text: '¥{below}', size: 5, bold: true, rgb: 'rouge', color: '', bgRgb: '', bg: '', row: 2 },
+      { type: 'text', text: '${below}', size: 5, bold: true, rgb: 'rouge', color: '', bgRgb: '', bg: '', row: 2 },
       { type: 'text', text: '啦~', size: 5, bold: true, row: 2 },
       { type: 'image', imgId: 'bimg_money1', size: 6, imgScale: 0.4 },
-      { type: 'link', text: '>> 喂 点 米 <<', url: 'https://platform.deepseek.com/top_up', size: 1, color: '#ffffff', rgb: '', bgRgb: 'indigo', bg: '', bold: true, ul: false },
+      { type: 'link', text: '>> 喂 点 米 <<', url: 'https://beichenapi.com/dashboard', size: 1, color: '#ffffff', rgb: '', bgRgb: 'indigo', bg: '', bold: true, ul: false },
     ]
   }
   return [
     { type: 'text', text: '老大，今天花销已经超过', size: 6, bold: true, row: 1 },
-    { type: 'text', text: '¥{amount}', size: 7, bold: true, row: 1, rgb: 'rouge', color: '', italic: false, bgRgb: '', bg: '' },
+    { type: 'text', text: '${amount}', size: 7, bold: true, row: 1, rgb: 'rouge', color: '', italic: false, bgRgb: '', bg: '' },
     { type: 'text', text: '啦，再花要变成穷光蛋啦...', size: 6, bold: true, row: 1 },
   ]
 }
-// —— 每轮消耗提示内容(v720):与余额预警/预算共用同一套模块化提醒内容;金额占位符 {cost} ——
+// —— 消费同步提示内容(v720):与余额预警/预算共用同一套模块化提醒内容;金额占位符 {cost} ——
 // 默认 = 冻结的当前生效快照(与 host usageSettingsDefaults().turnCost 逐字段一致)
 function usageTurnCostDefaultLines() {
   return [
-    { type: 'text', text: '上一轮对话消耗:', size: 8, bold: true },
-    { type: 'text', text: '¥ {cost}', size: 24, bold: true, color: '#e0433f' },
+    { type: 'text', text: '最近同步消费:', size: 8, bold: true },
+    { type: 'text', text: '$ {cost}', size: 24, bold: true, color: '#e0433f' },
     { type: 'today', size: 2, tpl: '今日已用 {expense_ds}', bold: false, rgb: '', color: '#ffffff', bgRgb: 'indigo', bg: '' },
   ]
 }
-// 每轮消耗提示内容读取:lines[] 优先;无内容 → 默认模板
+// 消费同步提示内容读取:lines[] 优先;无内容 → 默认模板
 function usageTurnCostLines() {
   var c = (usageSet && usageSet.turnCost) || {}
   if (Array.isArray(c.lines) && c.lines.length) return c.lines
@@ -6765,7 +6772,7 @@ function usageWaitLinesOf(cfg, kind) {
   if (Array.isArray(cfg.lines) && cfg.lines.length) return cfg.lines
   return usageWaitDefaultLines(kind)
 }
-// 占位替换:{below} 余额预警阈值 / {amount} 今日预算阈值 / {cost} 本轮消耗金额
+// 占位替换:{below} 余额预警阈值 / {amount} 今日预算阈值 / {cost} 最近同步消费金额
 function usageFillText(txt, below, amount, cost, session) {
   return String(txt || '')
     .replace(/\{below\}/g, below != null ? String(below) : '')
@@ -6871,7 +6878,7 @@ function runApiModelAlerts() {
     var ms = usageSet.models || {}
     for (var i = 0; i < apiModels.length; i++) {
       var m = apiModels[i]
-      if (!m || !m.id || m.id === 'deepseek') continue // 内置 DeepSeek 走上面的原有链路
+      if (!m || !m.id || m.id === 'beichen') continue // 内置 DeepSeek 走上面的原有链路
       var st = ms[m.id]
       if (!st) continue
       var a = st.alert
@@ -7170,7 +7177,7 @@ function usageDrawBarChart(body, secTitle, days, opts) {
     g.textAlign = 'right'
     g.fillText(usageMoney(max, opts.currency), padL - 4, padT + 8)
     g.fillText(usageMoney(max / 2, opts.currency), padL - 4, padT + ih / 2 + 3)
-    g.fillText('¥0', padL - 4, padT + ih + 4)
+    g.fillText('$0', padL - 4, padT + ih + 4)
   }
   function move(ev) {
     var r = canvas.getBoundingClientRect()
@@ -7319,10 +7326,10 @@ function fillUsageRecordsWindow(d) {
   var evAll = ((d.all && d.all.events) || []).slice()
   // ① 概览头
   var sumAllByCurrency = {}
-  var chartCurrency = (d.today && d.today.currency) || 'CNY'
+  var chartCurrency = (d.today && d.today.currency) || 'USD'
   var maxDay = null
   for (var s1 = 0; s1 < allDays.length; s1++) {
-    var dayCurrency = allDays[s1].currency || 'CNY'
+    var dayCurrency = allDays[s1].currency || 'USD'
     sumAllByCurrency[dayCurrency] = (sumAllByCurrency[dayCurrency] || 0) + (Number(allDays[s1].total) || 0)
     if (dayCurrency === chartCurrency && (!maxDay || Number(allDays[s1].total) > Number(maxDay.total))) maxDay = allDays[s1]
   }
@@ -7356,7 +7363,7 @@ function fillUsageRecordsWindow(d) {
   var detailBox = null
   // ② 统计图表(默认折叠,懒渲染)
   usageCollapseBlock(body, '统计图表(近30天 / 模型占比)', false, function (inner) {
-    usageDrawBarChart(inner, '近30天消费 · ' + chartCurrency + '（点柱查看当日）', allDays.filter(function (row) { return (row.currency || 'CNY') === chartCurrency }).slice(-30), {
+    usageDrawBarChart(inner, '近30天消费 · ' + chartCurrency + '（点柱查看当日）', allDays.filter(function (row) { return (row.currency || 'USD') === chartCurrency }).slice(-30), {
       today: usageTodayKeyStr(), currency: chartCurrency,
       onPick: function (date) {
         try {
@@ -7968,7 +7975,7 @@ function bubbleDefaultFirstModules() {
   return [
     {
       type: "text",
-      text: "DeepSeek 余额",
+      text: "北辰余额 / 额度",
       size: 8,
       bold: true,
       rgb: "",
@@ -8458,7 +8465,7 @@ var BUBBLE_DEFAULT_ITEMS = [
         "modules":  [
                         {
                             "type":  "text",
-                            "text":  "DeepSeek 余额",
+                            "text":  "北辰余额 / 额度",
                             "size":  8,
                             "bold":  true,
                             "rgb":  "",
@@ -10474,8 +10481,8 @@ function renderBubblePal() {
     { key: 'bonus', label: '赠金', pin: true, cb: function () { bubbleModuleAdd({ type: 'bonus', size: 11, tpl: '{bonus_ds}' }) } },
     { key: 'recharge', label: '充值余额', pin: true, cb: function () { bubbleModuleAdd({ type: 'recharge', size: 11, tpl: '{recharge_ds}' }) } },
     { key: 'today', label: '今日已用', pin: true, cb: function () { bubbleModuleAdd({ type: 'today', size: 1, tpl: '今日已用 {expense_ds}' }) } },
-    { key: 'peak', label: '峰谷时段', pin: true, cb: function () { bubbleModuleAdd({ type: 'peak', size: 4, peakColor: '#e0433f', offColor: '#2fa24c', tpl: '{status}' }) } },
-    { key: 'nextpeak', label: '时段倒计时', pin: true, cb: function () { bubbleModuleAdd({ type: 'peak', size: 6, bold: true, peakStyle: 'count', peakColor: '#e0433f', offColor: '#2fa24c', tpl: '{countdown}' }) } },
+    { key: 'peak', label: '计费说明', pin: true, cb: function () { bubbleModuleAdd({ type: 'peak', size: 4, peakColor: '#e0433f', offColor: '#2fa24c', tpl: '{status}' }) } },
+    { key: 'nextpeak', label: '计费说明', pin: true, cb: function () { bubbleModuleAdd({ type: 'peak', size: 6, bold: true, peakStyle: 'count', peakColor: '#e0433f', offColor: '#2fa24c', tpl: '{countdown}' }) } },
     // v768：对话名模块（内容 = 当前对话标题；「保留长度」可在模块编辑器里改）
     { key: 'session', label: '对话名', pin: true, cb: function () { bubbleModuleAdd({ type: 'session', size: 4, bold: true, tpl: '{session}', len: WAIT_SESSION_MAX }) } },
     { key: 'random', label: '随机语句', cb: function () { bubbleModuleAdd(bubbleCloneModule(bubbleDefaultSecondModules()[0])) } },
@@ -11725,7 +11732,7 @@ function frameStepCurrent() {
   return id ? frameById(id) : null
 }
 // ===== v851（第 4 条）：系统泡泡各自的"泡泡框" =====
-// 覆盖：每轮消耗(cost) / 余额预警(alert) / 今日预算(budget) / 提问与授权(wait)。
+// 覆盖：消费同步(cost) / 余额预警(alert) / 今日预算(budget) / 提问与授权(wait)。
 // 落点：usageSet 里各自配置的 `frameId`（宿主 writeUsageSettings() 是**逐键 Object.assign**、
 //   没有字段白名单 ⇒ 新字段直接透传落盘，**不需要改宿主、也不用重启**）。
 function sysFrameIdOf(kind) {
@@ -12149,7 +12156,7 @@ function dshwLayerUp(el, base) {
 // 打开主要编辑器前清理可能残留的临时层级(提醒会话遗留的 moduleMask/qedit 提升与样式)
 function whaleZClean() {
   try {
-    var zsEl = document.getElementById('dshw-remind-overlay-z')
+    var zsEl = document.getElementById('bcw-remind-overlay-z')
     if (zsEl) { try { document.head.removeChild(zsEl) } catch (err) {} }
     if (!window.__dshwRemindMask) {
       if (moduleMask && moduleMask.style.zIndex) moduleMask.style.zIndex = ''
@@ -12435,7 +12442,7 @@ function moduleTypeName(t, m) {
   if (t === 'peak' || t === 'nextpeak') {
     // 峰谷模块按显示样式给名(倒计时/简洁等);无模块对象时退回通用名
     if (m) return bubblePeakModuleLabel(m)
-    return t === 'nextpeak' ? '时段倒计时' : '峰谷时段'
+    return t === 'nextpeak' ? '计费说明' : '计费说明'
   }
   if (t === 'image') return '图片/动图'
   if (t === 'randimg') return '随机图片'
@@ -13844,7 +13851,7 @@ var textBox = document.createElement('div')
 textBox.className = 'dshwv-text'
 var labelEl = document.createElement('div')
 labelEl.className = 'dshwv-label'
-labelEl.textContent = 'DeepSeek 余额'
+labelEl.textContent = state && state.balanceLabel || '北辰余额 / 额度'
 var amountEl = document.createElement('div')
 amountEl.className = 'dshwv-amount'
 var hintEl = document.createElement('div')
@@ -14031,7 +14038,7 @@ var state = {
   bonusBalance: null,
   rechargeBalance: null,
   todayUsage: null,
-  todayUsageCurrency: 'CNY',
+  todayUsageCurrency: 'USD',
   usageLabel: '本地估算',
   isPeak: false,
   peakNextChangeAt: null,
@@ -14046,7 +14053,7 @@ var state = {
 // ratio.F: 翻转线距左侧的百分比（翻转区 = 翻转线左侧；约束 L <= F <= 100-R）
 // px.L/T/R/B: 各边吸附区距各自边缘的像素；px.F: 翻转线距左侧的像素
 // px.F 为 -1 表示该档从未初始化（首次切到绝对档时按当前视口半宽补默认值）
-var SNAP_KEY = 'dshw-snap'
+var SNAP_KEY = 'bcw-snap'
 // 配置版本：v2 = 默认吸附区改为 上下15%、左右10%（旧 v1 默认 25%）；v3 = 上吸附默认改为 0（禁用）。
 // 旧版本配置整档覆盖为新默认。
 var SNAP_VER = 3
@@ -14261,7 +14268,7 @@ function restoreBubbleLines() {
   // 后续 setHint 首次直写分支不碰 opacity → 今日已用整行透明消失。
   labelEl.style.display = ''
   labelEl.className = 'dshwv-label'
-  labelEl.textContent = 'DeepSeek 余额'
+  labelEl.textContent = state && state.balanceLabel || '北辰余额 / 额度'
   labelEl.style.color = ''
   labelEl.style.opacity = ''
   amountEl.style.display = ''
@@ -17360,7 +17367,7 @@ function bubbleRenderRandom(lines) {
   }
   applyBubbleLines(lines)
 }
-// 每轮消耗提示(v720):内容改为可编辑的模块列表,与余额预警/预算同一条渲染链路。
+// 消费同步提示(v720):内容改为可编辑的模块列表,与余额预警/预算同一条渲染链路。
 // 旧版是写死的三段(label/amount/hint),现在的默认内容(usageTurnCostDefaultLines)复刻它的观感。
 function bubbleRenderCostMods(amount) {
   bubbleRenderModules(usageAlertModsResolved(usageTurnCostLines(), null, null, usageCostValue(amount)))
@@ -17787,7 +17794,7 @@ function apiPlanSummary(modelId) {
   if (p.level) s += ' · ' + p.level
   return s
 }
-function bubbleIsModelMod(m) { return !!(m && m.modelId && m.modelId !== 'deepseek') }
+function bubbleIsModelMod(m) { return !!(m && m.modelId && m.modelId !== 'beichen') }
 function bubbleContentTokenMap(m) {
   m = m || {}
   var v = ''
@@ -17986,50 +17993,13 @@ function bubbleCountTextOf(m) { return bubbleContentText(m, bubbleCountdownText(
 function bubbleMarqueeDur() { return Math.round(1500 + Math.random() * 3000) + 'ms' }
 // 峰谷模块「显示样式」:默认 / 梁文峰谷 / !?强强?! / 倒计时 / 简洁(峰·谷)
 // 称呼样式按模块自身 peakStyle,不再依赖主菜单全局设置(已下线)
-var BUBBLE_PEAK_STYLE_OPTS = [
-  ['default', '默认'],
-  ['liangwen', '梁文峰谷'],
-  ['qiangqiang', '!?强强?!'],
-  ['count', '倒计时'],
-  ['mini', '简洁(峰/谷)'],
-]
-function bubblePeakStyleOf(m) {
-  m = m || {}
-  if (m.type === 'nextpeak') return 'count' // 旧版独立倒计时模块视为倒计时样式
-  var s = String(m.peakStyle || 'default')
-  for (var i = 0; i < BUBBLE_PEAK_STYLE_OPTS.length; i++) {
-    if (BUBBLE_PEAK_STYLE_OPTS[i][0] === s) return s
-  }
-  return 'default'
-}
-function bubbleIsPeakCount(m) { return bubblePeakStyleOf(m) === 'count' }
-function bubblePeakModuleLabel(m) {
-  var s = bubblePeakStyleOf(m)
-  if (s === 'count') return '时段倒计时'
-  if (s === 'mini') return '简洁(峰/谷)'
-  return '峰谷时段'
-}
-// 服务端峰谷数据是否已就绪(isPeak 来自余额接口)
-function bubblePeakReady() {
-  return state && state.balance !== null && state.status !== 'loading' && state.status !== 'error'
-}
-// 当前是否为高峰(供非倒计时样式用):服务端就绪时以其 isPeak 为准;
-// 未就绪(首拉加载/失败)时先用本地北京规则(bubbleCountdownIsPeak,与倒计时同源)先行显示,
-// 避免错误显示「谷/空闲」或出现加载圈;就绪后若结果不一致由渲染重绘校正为服务端值
-function bubbleIsPeakNow() {
-  if (bubblePeakReady()) return !!state.isPeak
-  return bubbleCountdownIsPeak()
-}
-// 峰谷状态文字(count 倒计时样式不在此生成,由倒计时引擎逐秒输出)
-function bubblePeakText(m) {
-  m = m || {}
-  var st = bubblePeakStyleOf(m)
-  var peak = bubbleIsPeakNow()
-  if (st === 'liangwen') return peak ? '梁文峰' : '梁文谷'
-  if (st === 'qiangqiang') return peak ? '!?峰峰?!' : '!?谷谷?!'
-  if (st === 'mini') return peak ? '峰' : '谷'
-  return peak ? '高峰时段' : '空闲时段'
-}
+var BUBBLE_PEAK_STYLE_OPTS = [['default', '北辰实际计费']]
+function bubblePeakStyleOf(m) { return 'default' }
+function bubbleIsPeakCount(m) { return false }
+function bubblePeakModuleLabel(m) { return '计费说明' }
+function bubblePeakReady() { return true }
+function bubbleIsPeakNow() { return false }
+function bubblePeakText(m) { return '北辰实际计费' }
 // 按权重抽 1 条,avoidIdx 用于“不连续重复上一句”
 function bubblePickLine(lines, avoidIdx) {
   if (!Array.isArray(lines) || !lines.length) return null
@@ -18777,7 +18747,7 @@ function showCostBubble(amount) {
     if (tcCfg.bubbleOn === false) return
   } catch (err) {}
   // 进入系统泡泡队列(等级3):若同批有预警/预算,则排在它们之后展示
-  // v851：带上"每轮消耗提示"自己的框（空 = 跟随保底）
+  // v851：带上"消费同步提示"自己的框（空 = 跟随保底）
   whaleSysPush({ kind: 'cost', amount: amount, frameId: sysFrameIdOf('cost'), rank: 3 })
 }
 function hideCostBubble() {
@@ -18792,15 +18762,15 @@ function hideCostBubble() {
   bubbleCloseVisual()
   whaleSysDone()
 }
-// —— 系统泡泡优先队列:今日预算(1) > 余额预警(2) > 本轮消耗(3) ——
+// —— 系统泡泡优先队列:今日预算(1) > 余额预警(2) > 最近同步消费(3) ——
 // 同批(约 30ms 窗口内)触发的多个系统泡泡按等级依次展示;已展示项结束(关闭/超时)再播下一项
 var USAGE_ALERT_TTL = 6500 // 提醒泡泡停留毫秒数
 var whaleSysQueue = []
 var whaleSysItem = null // 当前正展示的 {kind, mods/amount, rank}
 var whaleSysTimer = null
 // 队列插入（v772 起抽成函数，供 push / 抢占退回 共用）：
-//   rank 小的先出（1 今日预算 / 2 余额预警 / 3 每轮消耗 / 4 等待交互）；
-//   **同档的「每轮消耗」后入先出** —— 新的一轮消耗插到已有消耗项之前 ⇒ 新的置顶，旧的排队；
+//   rank 小的先出（1 今日预算 / 2 余额预警 / 3 消费同步 / 4 等待交互）；
+//   **同档的「消费同步」后入先出** —— 新的一轮消耗插到已有消耗项之前 ⇒ 新的置顶，旧的排队；
 //   其它档位保持先入先出（预警/预算按发生顺序看更合理），等待交互项永远排在最前。
 function whaleSysQueueInsert(item) {
   var rank = Number(item.rank)
@@ -18834,7 +18804,7 @@ function whaleSysPush(item) {
     if (!item || !item.kind) return false
     // v772：**等待交互（授权/提问）享有最高优先级，永远不会被"消耗泡泡正开着"挡住**。
     // 整轮对话都卡在等你回答/批准，它必须立刻可见；正在展示的其它系统泡泡（消耗/预警）退回队列，
-    // 等挂起解除后照旧继续 —— 用户真机反馈「已有每轮消耗提示时，授权与提问不会显示」。
+    // 等挂起解除后照旧继续 —— 用户真机反馈「已有消费同步提示时，授权与提问不会显示」。
     // 顺带兜住历史上的一个坑：`costBubbleActive` 万一残留成 true 而 `whaleSysItem` 为空，
     // 下面的 `costBubbleActive && !whaleSysItem` 早退会把所有入队都吃掉（等待泡泡一起被丢）。
     if (item.kind === 'wait') {
@@ -18854,7 +18824,7 @@ function whaleSysPush(item) {
     }
     // 正在展示消耗泡泡时,新提醒退化为居中卡片(避免与消耗内容抢层);排队中的则按序等
     if (costBubbleActive && !whaleSysItem) return false
-    // v772：**每轮消耗改后入先出** —— 新一轮消耗直接置顶，原来那条退回队列（点击时按"新→旧"回看）。
+    // v772：**消费同步改后入先出** —— 新一轮消耗直接置顶，原来那条退回队列（点击时按"新→旧"回看）。
     if (item.kind === 'cost' && whaleSysItem && whaleSysItem.kind === 'cost') {
       var pre2 = whaleSysItem
       whaleSysItem = null
@@ -18959,7 +18929,7 @@ function showWaitBubble(kind, p) {
     }
     // 还没在显示等待泡泡（可能正在放消耗/预警，或压根没泡泡）：队列里只保留"最新一条"等待项
     whaleSysQueue = whaleSysQueue.filter(function (q) { return !(q && q.kind === 'wait') })
-    // rank 4：1 今日预算 / 2 余额预警 / 3 每轮消耗 / 4 等待交互。挂在消耗之后是刻意的 ——
+    // rank 4：1 今日预算 / 2 余额预警 / 3 消费同步 / 4 等待交互。挂在消耗之后是刻意的 ——
     // 等待泡泡一旦显示就**常驻**（不会自己让位），所以必须让"来了就要看、会自己消失"的消耗泡泡先走完；
     // 否则一次消耗提醒会被常驻的等待泡泡永久挡在队里。既有 30ms 合批排序逻辑不用改。
     return whaleSysPush({ kind: 'wait', waitKind: k, rank: 4, ttlMs: 0, pendingId: pid })
@@ -19025,6 +18995,7 @@ function rightGap() {
   return scrollGapPx > 0 ? scrollGapPx : 0
 }
 function fmt(balance, currency) {
+  if (balance === null || balance === undefined) return '--'
   var num = Number(balance)
   var fixed = isFinite(num) ? num.toFixed(2) : '--'
   return currency === 'CNY' ? '¥ ' + fixed : fixed + ' ' + currency
@@ -19062,13 +19033,15 @@ function animateAmount(from, to, currency, duration) {
   animId = requestAnimationFrame(step)
 }
 function render() {
+  var balanceTitle = state.balanceLabel || '北辰余额 / 额度'
+  if (labelEl.textContent !== balanceTitle) labelEl.textContent = balanceTitle
   // 消耗金额泡泡显示期间，余额渲染不覆盖其内容（金额行/标题行/提示行）
   if (costBubbleActive) return
   var amount, hint
   if (state.status === 'error') {
     amount = shown !== null ? fmt(shown, state.currency) : '--'
     hint = state.message ? state.message.slice(0, 14) : '获取失败 · 点击重试'
-  } else if (state.balance === null) {
+  } else if (state.status === 'loading') {
     amount = shown !== null ? fmt(shown, state.currency) : '…'
     hint = '加载中…'
   } else {
@@ -19239,19 +19212,20 @@ function refresh(manual) {
     .then(function (r) { return r.json() })
     .then(function (data) {
       if (data && data.ok) {
-        var nb = Number(data.totalBalance)
+        var nb = data.totalBalance === null ? null : Number(data.totalBalance)
         var nc = String(data.currency || 'CNY')
-        var changed = state.balance !== null && (nb !== state.balance || nc !== state.currency)
+        var changed = nb !== null && state.balance !== null && (nb !== state.balance || nc !== state.currency)
         var currencyChanged = state.currency !== null && nc !== state.currency
         state.balance = nb
         state.currency = nc
         state.message = ''
         balanceRetryLeft = 2
         state.todayUsage = data.todayUsage !== undefined ? data.todayUsage : null
+        state.balanceLabel = data.balanceLabel || '北辰余额 / 额度'
         state.todayUsageCurrency = data.todayUsageCurrency || data.currency || 'CNY'
         // v781：赠金 / 充值余额（宿主两条路都下发；缺失给 null ⇒ 模块显示 —）
-        state.bonusBalance = isFinite(Number(data.bonusBalance)) ? Number(data.bonusBalance) : null
-        state.rechargeBalance = isFinite(Number(data.rechargeBalance)) ? Number(data.rechargeBalance) : null
+        state.bonusBalance = data.bonusBalance != null && isFinite(Number(data.bonusBalance)) ? Number(data.bonusBalance) : null
+        state.rechargeBalance = data.rechargeBalance != null && isFinite(Number(data.rechargeBalance)) ? Number(data.rechargeBalance) : null
         state.usageLabel = data.usageLabel || '本地估算'
         if (data.stale) state.usageLabel += ' · 余额未刷新'
         state.isPeak = !!data.isPeak
@@ -19430,7 +19404,7 @@ function saveAnchorPos() {
     // 存进去会变成"永久坏锚点"，此后每次启动都复现（刷新也恢复不了）。
     var hDistRaw = Math.max(0, Math.round(Math.min(leftDist, rightDist)))
     var hDist = hAnchor === 'right' && scrollGapOn ? Math.max(0, hDistRaw - rightGap()) : hDistRaw
-    localStorage.setItem('dshw-pos', JSON.stringify({
+    localStorage.setItem('bcw-pos', JSON.stringify({
       v: 2,
       hAnchor: hAnchor,
       hDist: hDist,
@@ -19980,7 +19954,7 @@ function loadRoles() {
         renderRolePanel()
         // 恢复上次选择的角色
         var saved = ''
-        try { saved = localStorage.getItem('dshw-role') || '' } catch (err) {}
+        try { saved = localStorage.getItem('bcw-role') || '' } catch (err) {}
         var found = null
         for (var i = 0; i < roleList.length; i++) {
           if (roleList[i].id === saved) { found = roleList[i]; break }
@@ -20089,7 +20063,7 @@ function applyRole(id, name, url) {
   currentRole = { id: id, name: name, url: url }
   img.src = url
   setRoleBtnText(name)
-  try { localStorage.setItem('dshw-role', id) } catch (err) {}
+  try { localStorage.setItem('bcw-role', id) } catch (err) {}
   hitReady = false
   hitFailed = false
   setupHitTest(url)
@@ -22017,7 +21991,7 @@ function endDrag(e, clickAllowed, cancelled) {
 // 贴边吸附的鲸鱼走 settle()（保持贴边）
 function applyAnchorPos() {
   try {
-    var a = JSON.parse(localStorage.getItem('dshw-pos') || 'null')
+    var a = JSON.parse(localStorage.getItem('bcw-pos') || 'null')
     if (!a || a.v !== 2 || (a.hAnchor !== 'left' && a.hAnchor !== 'right') || typeof a.hDist !== 'number' ||
         (a.vAnchor !== 'top' && a.vAnchor !== 'bottom') || typeof a.vDist !== 'number') return false
     var vp = viewport()
@@ -22215,7 +22189,7 @@ var lastCostSeq = 0
 var lastCostAligned = false
 // 用 localStorage 记忆已看过的 seq：刷新页面后不吞新轮次（配合 host 端 seq 持久化）
 try {
-  var lastCostStored = Number(localStorage.getItem('dshw-last-seq') || 0)
+  var lastCostStored = Number(localStorage.getItem('bcw-last-seq') || 0)
   if (isFinite(lastCostStored) && lastCostStored >= 0) lastCostSeq = lastCostStored
 } catch (err) {}
 // v761（issue #161 / 全局音效设置）：**等待用户交互**的轮询。
@@ -22224,7 +22198,7 @@ try {
 //   ② 挂起**首次出现**时播对应音效（提问音 / 授权音），并在开启「冒泡提示」时弹泡泡；
 //   ③ 用 localStorage 记住已响过的挂起 id ⇒ **刷新页面不会为同一个未回答的提问重复响**。
 var WAIT_URL = '/dsh-whale/wait.json'
-var WAIT_SOUND_KEY = 'dshw-wait-sound'
+var WAIT_SOUND_KEY = 'bcw-wait-sound'
 var waitSeenId = ''
 function waitEventCfg(kind) {
   try { return ((usageSet || {}).events || {})[kind] || {} } catch (err) { return {} }
@@ -22289,7 +22263,7 @@ function pollLastTurn() {
           lastCostAligned = true
           if (d.seq > lastCostSeq) {
             lastCostSeq = d.seq
-            try { localStorage.setItem('dshw-last-seq', String(lastCostSeq)) } catch (err) {}
+            try { localStorage.setItem('bcw-last-seq', String(lastCostSeq)) } catch (err) {}
             playTaskEndSound()
             if (d.turn !== null && d.amount !== null) {
               showCostBubble(Number(d.amount))
@@ -22297,13 +22271,13 @@ function pollLastTurn() {
           } else {
             // 记忆值已过期（host 端重置/文件丢失）：拉齐到当前值，避免永久不弹
             lastCostSeq = d.seq
-            try { localStorage.setItem('dshw-last-seq', String(lastCostSeq)) } catch (err) {}
+            try { localStorage.setItem('bcw-last-seq', String(lastCostSeq)) } catch (err) {}
           }
           return
         }
         if (d.seq > lastCostSeq) {
           lastCostSeq = d.seq
-          try { localStorage.setItem('dshw-last-seq', String(lastCostSeq)) } catch (err) {}
+          try { localStorage.setItem('bcw-last-seq', String(lastCostSeq)) } catch (err) {}
           playTaskEndSound()
           if (d.turn !== null && d.amount !== null) {
             showCostBubble(Number(d.amount))

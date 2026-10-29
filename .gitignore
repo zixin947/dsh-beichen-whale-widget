@@ -27,3 +27,12 @@ node_modules/
 *.bak2
 *.bak-devpaths
 _patch_*.patch
+
+# 北辰版独立数据与测试产物
+.bcw-*
+beichen-whale-roles/
+beichen-whale-audio/
+beichen-whale-bubble-imgs/
+*.tgz
+.env.*
+.DS_Store

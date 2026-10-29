@@ -1,7 +1,7 @@
 {
-  "name": "dsh-whale-widget",
-  "version": "0.4.2",
-  "description": "DSH Web 界面右下角的 DeepSeek 余额小鲸鱼挂件:余额/今日已用/峰谷定价、自定义泡泡点击序列(文本/余额/今日/峰谷/图片/随机语句与并列加权选择)、逐行样式与字体、悬浮快捷编辑、音效与每轮消耗、自定义角色/动图/音效、吸附与翻转自定义",
+  "name": "dsh-beichen-whale-widget",
+  "version": "0.1.0",
+  "description": "北辰 API 小鲸鱼记账挂件：钱包余额或 Key/订阅额度、服务端实际费用、每日账本、自定义角色/泡泡/音效，支持 DSH Web 与桌面端",
   "keywords": [
     "dsh",
     "dsh-plugin",
@@ -22,16 +22,20 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MeteorNOX/DeepSeek-Balance-Whale-Widget.git"
+    "url": "git+https://github.com/zixin947/dsh-beichen-whale-widget.git"
   },
   "bugs": {
-    "url": "https://github.com/MeteorNOX/DeepSeek-Balance-Whale-Widget/issues"
+    "url": "https://github.com/zixin947/dsh-beichen-whale-widget/issues"
   },
-  "homepage": "https://github.com/MeteorNOX/DeepSeek-Balance-Whale-Widget#readme",
+  "homepage": "https://github.com/zixin947/dsh-beichen-whale-widget#readme",
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
     }
   },
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "check": "node --check lib/index.js && node --check lib/beichen.mjs && node --check assets/whale-widget.js && node tools/z-layer-audit.mjs assets/whale-widget.js && node tools/ci-audit.mjs --no-pack && node tools/check-dead-settings.mjs"
+  }
 }
