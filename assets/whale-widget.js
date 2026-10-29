@@ -7344,11 +7344,11 @@ function fillUsageRecordsWindow(d) {
   ov.appendChild(ovN)
   var ovS = document.createElement('div')
   ovS.className = 'dshwv-usage-hint'
-  ovS.textContent = '共 ' + evAll.length + ' 笔明细' + (maxDay ? ' · 峰值 ' + maxDay.date + ' ' + usageMoney(maxDay.total, maxDay.currency) : '')
+  ovS.textContent = '共 ' + allDays.length + ' 天记录' + (maxDay ? ' · 峰值 ' + maxDay.date + ' ' + usageMoney(maxDay.total, maxDay.currency) : '')
   ov.appendChild(ovS)
   var sourceNote = document.createElement('div')
   sourceNote.className = 'dshwv-usage-hint'
-  sourceNote.textContent = '按各日标注口径汇总；本机模型明细为估算，与账户消费覆盖范围不同。'
+  sourceNote.textContent = '北辰服务端实际费用（USD），仅当前 API key；此处为每日汇总，逐请求明细请在北辰仪表盘查看。'
   ov.appendChild(sourceNote)
   // v776（issue #163）：多记账本（换过 API key）时补一句说明，让旧账本的记录有入口可查
   var bookNote = usageMultiBookNote(allDays, d.today)
@@ -7381,18 +7381,16 @@ function fillUsageRecordsWindow(d) {
       },
     })
     var todayAgg = usageAggModels(d.today && d.today.models ? [{ models: d.today.models }] : [])
-    usageRatioRows(inner, '今日模型费用 · 估算', todayAgg, usageMoney((d.today && d.today.modelTotal) || 0))
-    var sevenAgg = usageAggModels(d.days7 || [])
-    usageRatioRows(inner, '近7天模型费用 · 估算', sevenAgg, usageMoney((d.days7 || []).reduce(function (sum, row) { return sum + (Number(row.modelTotal) || 0) }, 0)))
+    usageRatioRows(inner, '今日模型实际费用', todayAgg, usageMoney((d.today && d.today.modelTotal) || 0))
   })
   // ③ 每日与逐条明细(默认折叠;搜索/限量加载)
-  detailBox = usageCollapseBlock(body, '每日与逐条明细', false, function (inner) {
+  detailBox = usageCollapseBlock(body, '每日费用记录', false, function (inner) {
     var search = document.createElement('input')
     search.type = 'text'
     search.className = 'dshwv-colnat'
     search.style.width = '100%'
     search.style.margin = '2px 0 6px'
-    search.placeholder = '搜索:日期(如 07-21)或模型名,过滤逐条明细…'
+    search.placeholder = '按日期搜索，例如 10-27…'
     inner.appendChild(search)
     // 事件按天分组
     var evMap = {}
@@ -7406,7 +7404,7 @@ function fillUsageRecordsWindow(d) {
     })
     var dayTot = {}
     var dayMeta = {}
-    allDays.forEach(function (dx) { dayTot[dx.date] = Number(dx.total) || 0; dayMeta[dx.date] = dx })
+    allDays.forEach(function (dx) { dayTot[dx.date] = dx.total === null ? null : (Number(dx.total) || 0); dayMeta[dx.date] = dx })
     var todayKeyStr2 = usageTodayKeyStr()
     function dayGroup(day, evs) {
       var row = document.createElement('div')
@@ -7425,7 +7423,7 @@ function fillUsageRecordsWindow(d) {
       c.style.flex = '0 0 auto'
       var dayV = dayTot[day]
       if ((dayV === undefined || dayV === 0) && day === todayKeyStr2 && d.today && isFinite(Number(d.today.total))) dayV = Number(d.today.total)
-      if (dayV === undefined || dayV === null) dayV = evs.reduce(function (a, x) { return a + (Number(x.cost) || 0) }, 0)
+      if (dayV === undefined) dayV = evs.reduce(function (a, x) { return a + (Number(x.cost) || 0) }, 0)
       c.textContent = usageMoney(dayV, dayMeta[day] && dayMeta[day].currency)
       // v776（issue #163）：悬停提示带上"历史记账本"说明（旧 key 的记账不再看着像丢了）
       var dayM = dayMeta[day] || {}
@@ -7475,7 +7473,7 @@ function fillUsageRecordsWindow(d) {
             if (!evs.length) {
               var nd = document.createElement('div')
               nd.className = 'dshwv-usage-hint'
-              nd.textContent = '该日仅总额(启用模型明细后展示逐条)'
+              nd.textContent = '该日为北辰每日汇总；逐请求明细请打开北辰仪表盘。'
               detail.appendChild(nd)
             }
           }
